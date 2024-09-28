@@ -5,9 +5,7 @@
 //  Created by Lori Rothermel on 9/25/24.
 //
 
-import Foundation
 import CoreLocation
-
 
 // Sample Paris Location
 extension CLLocationCoordinate2D {
