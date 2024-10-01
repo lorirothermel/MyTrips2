@@ -87,5 +87,4 @@ extension Destination {
     }  // var preview
 }
 
-    
 
