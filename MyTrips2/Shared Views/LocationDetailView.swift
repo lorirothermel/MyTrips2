@@ -15,6 +15,10 @@ struct LocationDetailView: View {
     var destination: Destination?
     var selectedPlacemark: MTPlacemark?
     
+    @Binding var showRoute: Bool
+    @Binding var travelInterval: TimeInterval?
+    @Binding var transportType: MKDirectionsTransportType
+    
     @State private var name = ""
     @State private var address = ""
     
@@ -24,6 +28,17 @@ struct LocationDetailView: View {
         guard let selectedPlacemark else { return false }
         return (name != selectedPlacemark.name || address != selectedPlacemark.address)
     }  // var isChanged
+    
+    var travelTime: String? {
+        guard let travelInterval else { return nil}
+        
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .abbreviated
+        formatter.allowedUnits = [.hour, .minute]
+        
+        return formatter.string(from: travelInterval)
+    }  // var travelTime
+    
     
     var body: some View {
         VStack {
@@ -54,6 +69,30 @@ struct LocationDetailView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.trailing)
                     }  // if else
+                    if destination == nil {
+                        HStack {
+                            Button {
+                                transportType = .automobile
+                            } label: {
+                                Image(systemName: "car")
+                                    .symbolVariant(transportType == .automobile ? .circle : .none)
+                                    .imageScale(.large)
+                            }  // Button - Car
+                            Button {
+                                transportType = .walking
+                            } label: {
+                                Image(systemName: "figure.walk")
+                                    .symbolVariant(transportType == .walking ? .circle : .none)
+                                    .imageScale(.large)
+                            }  // Button - Walking
+                            if let travelTime {
+                                let prefix = transportType == .automobile ? "Driving" : "Walking"
+                                Text("\(prefix) time: \(travelTime)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }  // if
+                        }  // HStack
+                    }  // if
                 }  // VStack
                 .textFieldStyle(.roundedBorder)
                 .autocorrectionDisabled()
@@ -104,7 +143,7 @@ struct LocationDetailView: View {
                         }  // Button - Open in Maps
                         .fixedSize(horizontal: true, vertical: false)
                         Button("Show Route", systemImage: "location.north") {
-
+                            showRoute.toggle()
                         }  // Button - Show Route
                         .fixedSize(horizontal: true, vertical: false)
                     }  // HStack
@@ -142,7 +181,10 @@ struct LocationDetailView: View {
     let selectedPlacemark = destination.placemarks[0]
     return LocationDetailView(
         destination: destination,
-        selectedPlacemark: selectedPlacemark
+        selectedPlacemark: selectedPlacemark,
+        showRoute: .constant(false),
+        travelInterval: .constant(nil),
+        transportType: .constant(.automobile)
     )
 }
 
@@ -152,6 +194,9 @@ struct LocationDetailView: View {
     let placemarks = try! container.mainContext.fetch(fetchDescriptor)
     let selectedPlacemark = placemarks[0]
     return LocationDetailView(
-        selectedPlacemark: selectedPlacemark
+        selectedPlacemark: selectedPlacemark,
+        showRoute: .constant(false),
+        travelInterval: .constant(TimeInterval(1000)),
+        transportType: .constant(.automobile)
     )
 }

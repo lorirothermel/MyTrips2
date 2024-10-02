@@ -106,7 +106,12 @@ struct DestinationLocationsMapView: View {
                 MapManager.removeSearchResults(modelContext)
             }  // if
         }) { selectedPlacemark in
-            LocationDetailView(destination: destination, selectedPlacemark: selectedPlacemark)
+            LocationDetailView(
+                destination: destination,
+                selectedPlacemark: selectedPlacemark,
+                showRoute: .constant(false),
+                travelInterval: .constant(nil),
+                transportType: .constant(.automobile))
         }  // .sheet
         .presentationDetents([.height(450)])
         
